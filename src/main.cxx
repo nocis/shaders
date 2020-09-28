@@ -279,8 +279,10 @@ PhysicsManager physicsManager = PhysicsManager();
 
 // MAIN
 
-int main( int argc, char *argv[]) 
-{
+int main
+  ( int argc
+  , char *argv[]
+  ) {
   LColor backgroundColor [] =
     { LColor
         ( 0.392
@@ -514,36 +516,60 @@ int main( int argc, char *argv[])
       | PartGroup::HMF_ok_anim_extra
     );
 
-  //generateLights(render, false);
+  generateLights(render, false);
 
   PT(Shader) discardShader               = loadShader("discard", "discard");
-  PT(Shader) baseShader                  = loadShader("base",    "base");
-  PT(Shader) geometryBufferShader0       = loadShader("base",    "geometry-buffer-0");
-  PT(Shader) geometryBufferShader1       = loadShader("base",    "geometry-buffer-1");
-  PT(Shader) geometryBufferShader2       = loadShader("base",    "geometry-buffer-2");
-  PT(Shader) foamShader                  = loadShader("basic",   "foam");
-  PT(Shader) fogShader                   = loadShader("basic",   "fog");
-  PT(Shader) boxBlurShader               = loadShader("basic",   "box-blur");
-  PT(Shader) motionBlurShader            = loadShader("basic",   "motion-blur");
-  PT(Shader) kuwaharaFilterShader        = loadShader("basic",   "kuwahara-filter");
-  PT(Shader) dilationShader              = loadShader("basic",   "dilation");
-  PT(Shader) sharpenShader               = loadShader("basic",   "sharpen");
-  PT(Shader) outlineShader               = loadShader("basic",   "outline");
-  PT(Shader) bloomShader                 = loadShader("basic",   "bloom");
-  PT(Shader) ssaoShader                  = loadShader("basic",   "ssao");
-  PT(Shader) screenSpaceRefractionShader = loadShader("basic",   "screen-space-refraction");
-  PT(Shader) screenSpaceReflectionShader = loadShader("basic",   "screen-space-reflection");
-  PT(Shader) refractionShader            = loadShader("basic",   "refraction");
-  PT(Shader) reflectionColorShader       = loadShader("basic",   "reflection-color");
-  PT(Shader) reflectionShader            = loadShader("basic",   "reflection");
-  PT(Shader) baseCombineShader           = loadShader("basic",   "base-combine");
-  PT(Shader) sceneCombineShader          = loadShader("basic",   "scene-combine");
-  PT(Shader) depthOfFieldShader          = loadShader("basic",   "depth-of-field");
-  PT(Shader) posterizeShader             = loadShader("basic",   "posterize");
-  PT(Shader) pixelizeShader              = loadShader("basic",   "pixelize");
-  PT(Shader) filmGrainShader             = loadShader("basic",   "film-grain");
-  PT(Shader) lookupTableShader           = loadShader("basic",   "lookup-table");
-  PT(Shader) gammaCorrectionShader       = loadShader("basic",   "gamma-correction");
+  PT(Shader) testShader                  = loadShader("test",    "test");
+  PT(Shader) geometryBufferShader0       = loadShader("geometry","geometry0");
+  PT(Shader) geometryBufferShader1       = loadShader("geometry","geometry1");
+  //PT(Shader) geometryBufferShader2       = loadShader("base",    "geometry-buffer-2");
+  //PT(Shader) foamShader                  = loadShader("basic",   "foam");
+  //PT(Shader) fogShader                   = loadShader("basic",   "fog");
+  //PT(Shader) boxBlurShader               = loadShader("basic",   "box-blur");
+  //PT(Shader) motionBlurShader            = loadShader("basic",   "motion-blur");
+  //PT(Shader) kuwaharaFilterShader        = loadShader("basic",   "kuwahara-filter");
+  //PT(Shader) dilationShader              = loadShader("basic",   "dilation");
+  //PT(Shader) sharpenShader               = loadShader("basic",   "sharpen");
+  //PT(Shader) outlineShader               = loadShader("basic",   "outline");
+  //PT(Shader) bloomShader                 = loadShader("basic",   "bloom");
+  //PT(Shader) ssaoShader                  = loadShader("basic",   "ssao");
+  //PT(Shader) screenSpaceRefractionShader = loadShader("basic",   "screen-space-refraction");
+  //PT(Shader) screenSpaceReflectionShader = loadShader("basic",   "screen-space-reflection");
+  //PT(Shader) refractionShader            = loadShader("basic",   "refraction");
+  //PT(Shader) reflectionColorShader       = loadShader("basic",   "reflection-color");
+  //PT(Shader) reflectionShader            = loadShader("basic",   "reflection");
+  //PT(Shader) baseCombineShader           = loadShader("basic",   "base-combine");
+  //PT(Shader) sceneCombineShader          = loadShader("basic",   "scene-combine");
+  //PT(Shader) depthOfFieldShader          = loadShader("basic",   "depth-of-field");
+  //PT(Shader) posterizeShader             = loadShader("basic",   "posterize");
+  //PT(Shader) pixelizeShader              = loadShader("basic",   "pixelize");
+  //PT(Shader) filmGrainShader             = loadShader("basic",   "film-grain");
+  //PT(Shader) lookupTableShader           = loadShader("basic",   "lookup-table");
+  //PT(Shader) gammaCorrectionShader       = loadShader("basic",   "gamma-correction");
+
+
+
+  // each program use only one time, result fetched by buffer
+  // shaderNP mapping to buffer
+
+  // Shaders propagate down the scene graph, like any other render attribute; the node and everything beneath it will use the shader.
+  
+
+
+  // only geometrypass and basspass requires scene to shade!!!!!!
+
+  // cameraNP -> render(3d): showing mainCameraNP.set_shader buffer
+  // our shaders(showBuffer) -> render2d: showing user defiened buffer
+
+
+  // showBuffer just binds render-to-texture to render2d texture card, default show the first rendered texture() 
+  // // The texture card, by default, is textured with the first render-to-
+  // // texture output texture.  Depth and stencil textures are ignored.  The
+  // // user can freely alter the card's texture attrib.
+
+
+  // false using scene lead to a new camera for rendering!  not maincamera, so you cannot
+  // control!!!
 
   NodePath mainCameraNP = NodePath("mainCamera");
   mainCameraNP.set_shader(discardShader);
@@ -562,707 +588,192 @@ int main( int argc, char *argv[])
   LMatrix4 previousViewWorldMat     = previousViewWorldMat;
 
   FramebufferTextureArguments framebufferTextureArguments;
+
+
+
+
+
+
+  // use hide(BitMask32::bit(N)) to set NodePath not rendered by the camera with mask bits N
+  // waterNP.hide(BitMask32::bit(1)); not rendered for mask bits 1 camera ( 1, 3, 5.... )
+  // smokeNP.hide(BitMask32::bit(1));
+
+
+  // use waterNP.set_tag to enable waterNP state, which replaces shader input 
+  // e.g. from blankTexture to foamPatternTexture !!!!!
+  // becasue waterNP and smokeNP used a lot in many passes!!!!! 
+
+  waterNP.hide(BitMask32::bit(1));
+  smokeNP.hide(BitMask32::bit(1));
+  smokeNP.hide(BitMask32::bit(2));
+
+  
+  /********************************************************************************
+  0. test pass
+  ********************************************************************************/
+
   framebufferTextureArguments.window         = window;
   framebufferTextureArguments.graphicsOutput = graphicsOutput;
   framebufferTextureArguments.graphicsEngine = graphicsEngine;
-
   framebufferTextureArguments.bitplane       = GraphicsOutput::RTP_color;
-  framebufferTextureArguments.rgbaBits       = rgba32;
+  framebufferTextureArguments.rgbaBits       = rgba8;
   framebufferTextureArguments.clearColor     = LColor(0, 0, 0, 0);
-  framebufferTextureArguments.aux_rgba       = 1;
   framebufferTextureArguments.setFloatColor  = true;
   framebufferTextureArguments.setSrgbColor   = false;
   framebufferTextureArguments.setRgbColor    = true;
+  framebufferTextureArguments.aux_rgba       = 0;
+  framebufferTextureArguments.useScene       = true;
+  framebufferTextureArguments.name           = "test";
+
+  FramebufferTexture testFramebufferTexture = generateFramebufferTexture( framebufferTextureArguments);
+  
+  PT(GraphicsOutput) testBuffer = testFramebufferTexture.buffer;
+  PT(Camera)         testCamera = testFramebufferTexture.camera;
+  NodePath           testNP     = testFramebufferTexture.shaderNP;
+
+  // clear the corresponding slot Buffer texture( start from 3 )
+  testBuffer->set_clear_active(3, true);
+  testBuffer->set_clear_value( 3, framebufferTextureArguments.clearColor);
+
+  testNP.set_shader(testShader);
+  testCamera->set_initial_state(testNP.get_state());
+  PT(Texture) testTexture     = testBuffer->get_texture(0);
+
+
+
+
+
+
+  /********************************************************************************
+  1. geometry0 pass
+     --position texture
+     --normal texture
+     --geometryCameraLens0
+  ********************************************************************************/
+  // rgba8 : 32-bit-per-pixel
+
+  framebufferTextureArguments.window         = window;
+  framebufferTextureArguments.graphicsOutput = graphicsOutput;
+  framebufferTextureArguments.graphicsEngine = graphicsEngine;
+  framebufferTextureArguments.bitplane       = GraphicsOutput::RTP_color;
+  framebufferTextureArguments.rgbaBits       = rgba8;
+  framebufferTextureArguments.clearColor     = LColor(0, 0, 0, 0);
+  framebufferTextureArguments.setFloatColor  = true;
+  framebufferTextureArguments.setSrgbColor   = false;
+  framebufferTextureArguments.setRgbColor    = true;
+  framebufferTextureArguments.aux_rgba       = 1;
   framebufferTextureArguments.useScene       = true;
   framebufferTextureArguments.name           = "geometry0";
 
-  FramebufferTexture geometryFramebufferTexture0 =
-    generateFramebufferTexture
-      ( framebufferTextureArguments
-      );
-  PT(GraphicsOutput) geometryBuffer0 = geometryFramebufferTexture0.buffer;
-  PT(Camera)         geometryCamera0 = geometryFramebufferTexture0.camera;
-  NodePath           geometryNP0     = geometryFramebufferTexture0.shaderNP;
-  geometryBuffer0->add_render_texture
-    ( NULL
-    , GraphicsOutput::RTM_bind_or_copy
-    , GraphicsOutput::RTP_aux_rgba_0
-    );
-  geometryBuffer0->set_clear_active(3, true);
-  geometryBuffer0->set_clear_value( 3, framebufferTextureArguments.clearColor);
-  geometryNP0.set_shader(geometryBufferShader0);
-  geometryNP0.set_shader_input("normalMapsEnabled", normalMapsEnabled);
-  geometryCamera0->set_initial_state(geometryNP0.get_state());
-  geometryCamera0->set_camera_mask(BitMask32::bit(1));
-  PT(Texture) positionTexture0    = geometryBuffer0->get_texture(0);
-  PT(Texture) normalTexture0      = geometryBuffer0->get_texture(1);
-  PT(Lens)    geometryCameraLens0 = geometryCamera0->get_lens();
-  waterNP.hide(BitMask32::bit(1));
-  smokeNP.hide(BitMask32::bit(1));
+  FramebufferTexture geometry0FramebufferTexture = generateFramebufferTexture( framebufferTextureArguments);
+  
+  PT(GraphicsOutput) geometry0Buffer = geometry0FramebufferTexture.buffer;
+  PT(Camera)         geometry0Camera = geometry0FramebufferTexture.camera;
+  NodePath           geometry0NP     = geometry0FramebufferTexture.shaderNP;
 
-  framebufferTextureArguments.aux_rgba = 4;
-  framebufferTextureArguments.name     = "geometry1";
+  geometry0Buffer->add_render_texture( NULL, GraphicsOutput::RTM_bind_or_copy, GraphicsOutput::RTP_aux_rgba_0);
 
-  FramebufferTexture geometryFramebufferTexture1 =
-    generateFramebufferTexture
-      ( framebufferTextureArguments
-      );
-  PT(GraphicsOutput) geometryBuffer1 = geometryFramebufferTexture1.buffer;
-  PT(Camera)         geometryCamera1 = geometryFramebufferTexture1.camera;
-  NodePath           geometryNP1     = geometryFramebufferTexture1.shaderNP;
-  geometryBuffer1->add_render_texture
-    ( NULL
-    , GraphicsOutput::RTM_bind_or_copy
-    , GraphicsOutput::RTP_aux_rgba_0
-    );
-  geometryBuffer1->set_clear_active(3, true);
-  geometryBuffer1->set_clear_value( 3, framebufferTextureArguments.clearColor);
-  geometryBuffer1->add_render_texture
-    ( NULL
-    , GraphicsOutput::RTM_bind_or_copy
-    , GraphicsOutput::RTP_aux_rgba_1
-    );
-  geometryBuffer1->set_clear_active(4, true);
-  geometryBuffer1->set_clear_value( 4, framebufferTextureArguments.clearColor);
-  geometryBuffer1->add_render_texture
-    ( NULL
-    , GraphicsOutput::RTM_bind_or_copy
-    , GraphicsOutput::RTP_aux_rgba_2
-    );
-  geometryBuffer1->set_clear_active(5, true);
-  geometryBuffer1->set_clear_value( 5, framebufferTextureArguments.clearColor);
-  geometryBuffer1->add_render_texture
-    ( NULL
-    , GraphicsOutput::RTM_bind_or_copy
-    , GraphicsOutput::RTP_aux_rgba_3
-    );
-  geometryBuffer1->set_clear_active(6, true);
-  geometryBuffer1->set_clear_value( 6, framebufferTextureArguments.clearColor);
-  geometryNP1.set_shader(geometryBufferShader1);
-  geometryNP1.set_shader_input("normalMapsEnabled",  normalMapsEnabled);
-  geometryNP1.set_shader_input("flowTexture",        stillFlowTexture);
-  geometryNP1.set_shader_input("foamPatternTexture", blankTexture);
-  geometryNP1.set_shader_input("flowMapsEnabled",    flowMapsEnabled);
-  geometryCamera1->set_initial_state(geometryNP1.get_state());
-  geometryCamera1->set_tag_state_key("geometryBuffer1");
-  geometryCamera1->set_tag_state("isWater", isWaterNP.get_state());
-  geometryCamera1->set_camera_mask(BitMask32::bit(2));
-  PT(Texture) positionTexture1        = geometryBuffer1->get_texture(0);
-  PT(Texture) normalTexture1          = geometryBuffer1->get_texture(1);
-  PT(Texture) reflectionMaskTexture   = geometryBuffer1->get_texture(2);
-  PT(Texture) refractionMaskTexture   = geometryBuffer1->get_texture(3);
-  PT(Texture) foamMaskTexture         = geometryBuffer1->get_texture(4);
-  PT(Lens)    geometryCameraLens1     = geometryCamera1->get_lens();
-  waterNP.set_tag("geometryBuffer1", "isWater");
-  smokeNP.hide(BitMask32::bit(2));
+  geometry0Buffer->set_clear_active(3, true);
+  geometry0Buffer->set_clear_value( 3, framebufferTextureArguments.clearColor);
 
-  framebufferTextureArguments.aux_rgba = 1;
-  framebufferTextureArguments.name     = "geometry2";
+  geometry0NP.set_shader(geometryBufferShader0);
+  geometry0NP.set_shader_input("normalMapsEnabled", normalMapsEnabled);
+  geometry0Camera->set_initial_state(geometry0NP.get_state());
+  geometry0Camera->set_camera_mask(BitMask32::bit(1));
+  PT(Texture) positionTexture0    = geometry0Buffer->get_texture(0);
+  PT(Texture) normalTexture0      = geometry0Buffer->get_texture(1);
+  PT(Lens)    geometryCameraLens0 = geometry0Camera->get_lens();
 
-  FramebufferTexture geometryFramebufferTexture2 =
-    generateFramebufferTexture
-      ( framebufferTextureArguments
-      );
-  PT(GraphicsOutput) geometryBuffer2 = geometryFramebufferTexture2.buffer;
-  PT(Camera)         geometryCamera2 = geometryFramebufferTexture2.camera;
-  NodePath           geometryNP2     = geometryFramebufferTexture2.shaderNP;
-  geometryBuffer2->add_render_texture
-    ( NULL
-    , GraphicsOutput::RTM_bind_or_copy
-    , GraphicsOutput::RTP_aux_rgba_0
-    );
-  geometryBuffer2->set_clear_active(3, true);
-  geometryBuffer2->set_clear_value( 3, framebufferTextureArguments.clearColor);
-  geometryBuffer2->set_sort(geometryBuffer1->get_sort() + 1);
-  geometryNP2.set_shader(geometryBufferShader2);
-  geometryNP2.set_shader_input("isSmoke",         LVecBase2f(0, 0));
-  geometryNP2.set_shader_input("positionTexture", positionTexture1);
-  geometryCamera2->set_initial_state(geometryNP2.get_state());
-  geometryCamera2->set_tag_state_key("geometryBuffer2");
-  geometryCamera2->set_tag_state("isSmoke", isSmokeNP.get_state());
-  smokeNP.set_tag("geometryBuffer2", "isSmoke");
-  PT(Texture) positionTexture2         = geometryBuffer2->get_texture(0);
-  PT(Texture) smokeMaskTexture         = geometryBuffer2->get_texture(1);
-  PT(Lens)    geometryCameraLens2      = geometryCamera2->get_lens();
 
-  framebufferTextureArguments.rgbaBits      = rgba8;
-  framebufferTextureArguments.aux_rgba      = 0;
-  framebufferTextureArguments.clearColor    = LColor(0, 0, 0, 0);
-  framebufferTextureArguments.setFloatColor = false;
-  framebufferTextureArguments.useScene      = false;
-  framebufferTextureArguments.name          = "fog";
+  /********************************************************************************
+  2. geometry1 pass
+     --positionTexture1        
+     --normalTexture1          
+     --reflectionMaskTexture   
+     --refractionMaskTexture   
+     --foamMaskTexture         
+     --geometryCameraLens1     
+  ********************************************************************************/
+  // rgba8 : 32-bit-per-pixel
 
-  FramebufferTexture fogFramebufferTexture =
-    generateFramebufferTexture
-      ( framebufferTextureArguments
-      );
-  PT(GraphicsOutput) fogBuffer = fogFramebufferTexture.buffer;
-  PT(Camera)         fogCamera = fogFramebufferTexture.camera;
-  NodePath           fogNP     = fogFramebufferTexture.shaderNP;
-  fogBuffer->set_sort(geometryBuffer2->get_sort() + 1);
-  fogNP.set_shader(fogShader);
-  fogNP.set_shader_input("pi",               PI_SHADER_INPUT);
-  fogNP.set_shader_input("gamma",            GAMMA_SHADER_INPUT);
-  fogNP.set_shader_input("backgroundColor0", backgroundColor[0]);
-  fogNP.set_shader_input("backgroundColor1", backgroundColor[1]);
-  fogNP.set_shader_input("positionTexture0", positionTexture1);
-  fogNP.set_shader_input("positionTexture1", positionTexture2);
-  fogNP.set_shader_input("smokeMaskTexture", smokeMaskTexture);
-  fogNP.set_shader_input("sunPosition",      LVecBase2f(sunlightP, 0));
-  fogNP.set_shader_input("origin",           cameraNP.get_relative_point(render, environmentNP.get_pos()));
-  fogNP.set_shader_input("nearFar",          LVecBase2f(fogNear, fogFar));
-  fogNP.set_shader_input("enabled",          fogEnabled);
-  fogCamera->set_initial_state(fogNP.get_state());
-  PT(Texture) fogTexture = fogBuffer->get_texture();
+  framebufferTextureArguments.window         = window;
+  framebufferTextureArguments.graphicsOutput = graphicsOutput;
+  framebufferTextureArguments.graphicsEngine = graphicsEngine;
+  framebufferTextureArguments.bitplane       = GraphicsOutput::RTP_color;
+  framebufferTextureArguments.rgbaBits       = rgba8;
+  framebufferTextureArguments.clearColor     = LColor(0, 0, 0, 0);
+  framebufferTextureArguments.setFloatColor  = true;
+  framebufferTextureArguments.setSrgbColor   = false;
+  framebufferTextureArguments.setRgbColor    = true;
+  framebufferTextureArguments.aux_rgba       = 4;
+  framebufferTextureArguments.useScene       = true;
+  framebufferTextureArguments.name           = "geometry1";
 
-  framebufferTextureArguments.clearColor = LColor(1, 1, 1, 0);
-  framebufferTextureArguments.name       = "ssao";
+  FramebufferTexture geometry1FramebufferTexture = generateFramebufferTexture( framebufferTextureArguments);
+  
+  PT(GraphicsOutput) geometry1Buffer = geometry1FramebufferTexture.buffer;
+  PT(Camera)         geometry1Camera = geometry1FramebufferTexture.camera;
+  NodePath           geometry1NP     = geometry1FramebufferTexture.shaderNP;
 
-  FramebufferTexture ssaoFramebufferTexture =
-    generateFramebufferTexture
-      ( framebufferTextureArguments
-      );
-  PT(GraphicsOutput) ssaoBuffer = ssaoFramebufferTexture.buffer;
-  PT(Camera)         ssaoCamera = ssaoFramebufferTexture.camera;
-  NodePath           ssaoNP     = ssaoFramebufferTexture.shaderNP;
-  ssaoBuffer->set_sort(geometryBuffer0->get_sort() + 1);
-  ssaoNP.set_shader(ssaoShader);
-  ssaoNP.set_shader_input("positionTexture", positionTexture0);
-  ssaoNP.set_shader_input("normalTexture",   normalTexture0);
-  ssaoNP.set_shader_input("samples",         generateSsaoSamples(SSAO_SAMPLES));
-  ssaoNP.set_shader_input("noise",           generateSsaoNoise(SSAO_NOISE));
-  ssaoNP.set_shader_input("lensProjection",  geometryCameraLens0->get_projection_mat());
-  ssaoNP.set_shader_input("enabled",         ssaoEnabled);
-  ssaoCamera->set_initial_state(ssaoNP.get_state());
+  
+  geometry1Buffer->add_render_texture( NULL, GraphicsOutput::RTM_bind_or_copy, GraphicsOutput::RTP_aux_rgba_0);
 
-  framebufferTextureArguments.name = "ssaoBlur";
+  geometry1Buffer->set_clear_active(3, true);
+  geometry1Buffer->set_clear_value( 3, framebufferTextureArguments.clearColor);
 
-  FramebufferTexture ssaoBlurFramebufferTexture =
-    generateFramebufferTexture
-      ( framebufferTextureArguments
-      );
-  PT(GraphicsOutput) ssaoBlurBuffer = ssaoBlurFramebufferTexture.buffer;
-  NodePath           ssaoBlurNP     = ssaoBlurFramebufferTexture.shaderNP;
-  ssaoBlurBuffer->set_sort(ssaoBuffer->get_sort() + 1);
-  ssaoBlurNP.set_shader(kuwaharaFilterShader);
-  ssaoBlurNP.set_shader_input("colorTexture", ssaoBuffer->get_texture());
-  ssaoBlurNP.set_shader_input("parameters",   LVecBase2f(1, 0));
-  ssaoBlurFramebufferTexture.camera->set_initial_state(ssaoBlurNP.get_state());
-  PT(Texture) ssaoBlurTexture = ssaoBlurBuffer->get_texture();
+  geometry1Buffer->add_render_texture( NULL, GraphicsOutput::RTM_bind_or_copy, GraphicsOutput::RTP_aux_rgba_1);
 
-  framebufferTextureArguments.rgbaBits   = rgba16;
-  framebufferTextureArguments.clearColor = LColor(0, 0, 0, 0);
-  framebufferTextureArguments.name       = "refractionUv";
+  geometry1Buffer->set_clear_active(4, true);
+  geometry1Buffer->set_clear_value( 4, framebufferTextureArguments.clearColor);
 
-  FramebufferTexture refractionUvFramebufferTexture =
-    generateFramebufferTexture
-      ( framebufferTextureArguments
-      );
-  PT(GraphicsOutput) refractionUvBuffer = refractionUvFramebufferTexture.buffer;
-  PT(Camera)         refractionUvCamera = refractionUvFramebufferTexture.camera;
-  NodePath           refractionUvNP     = refractionUvFramebufferTexture.shaderNP;
-  refractionUvBuffer->set_sort(geometryBuffer1->get_sort() + 1);
-  refractionUvNP.set_shader(screenSpaceRefractionShader);
-  refractionUvNP.set_shader_input("positionFromTexture", positionTexture1);
-  refractionUvNP.set_shader_input("positionToTexture",   positionTexture0);
-  refractionUvNP.set_shader_input("normalFromTexture",   normalTexture1);
-  refractionUvNP.set_shader_input("lensProjection",      geometryCameraLens0->get_projection_mat());
-  refractionUvNP.set_shader_input("enabled",             refractionEnabled);
-  refractionUvNP.set_shader_input("rior",                rior);
-  refractionUvCamera->set_initial_state(refractionUvNP.get_state());
-  PT(Texture) refractionUvTexture = refractionUvBuffer->get_texture();
+  geometry1Buffer->add_render_texture( NULL, GraphicsOutput::RTM_bind_or_copy, GraphicsOutput::RTP_aux_rgba_2);
 
-  framebufferTextureArguments.name = "reflectionUv";
+  geometry1Buffer->set_clear_active(5, true);
+  geometry1Buffer->set_clear_value( 5, framebufferTextureArguments.clearColor);
 
-  FramebufferTexture reflectionUvFramebufferTexture =
-    generateFramebufferTexture
-      ( framebufferTextureArguments
-      );
-  PT(GraphicsOutput) reflectionUvBuffer = reflectionUvFramebufferTexture.buffer;
-  PT(Camera)         reflectionUvCamera = reflectionUvFramebufferTexture.camera;
-  NodePath           reflectionUvNP     = reflectionUvFramebufferTexture.shaderNP;
-  reflectionUvBuffer->set_sort(geometryBuffer1->get_sort() + 1);
-  reflectionUvNP.set_shader(screenSpaceReflectionShader);
-  reflectionUvNP.set_shader_input("positionTexture", positionTexture1);
-  reflectionUvNP.set_shader_input("normalTexture",   normalTexture1);
-  reflectionUvNP.set_shader_input("maskTexture",     reflectionMaskTexture);
-  reflectionUvNP.set_shader_input("lensProjection",  geometryCameraLens0->get_projection_mat());
-  reflectionUvNP.set_shader_input("enabled",         reflectionEnabled);
-  reflectionUvCamera->set_initial_state(reflectionUvNP.get_state());
-  PT(Texture) reflectionUvTexture = reflectionUvBuffer->get_texture();
+  geometry1Buffer->add_render_texture( NULL, GraphicsOutput::RTM_bind_or_copy, GraphicsOutput::RTP_aux_rgba_3);
 
-  framebufferTextureArguments.rgbaBits = rgba8;
-  framebufferTextureArguments.aux_rgba = 1;
-  framebufferTextureArguments.useScene = true;
-  framebufferTextureArguments.name     = "base";
+  geometry1Buffer->set_clear_active(6, true);
+  geometry1Buffer->set_clear_value( 6, framebufferTextureArguments.clearColor);
 
-  FramebufferTexture baseFramebufferTexture =
-    generateFramebufferTexture
-      ( framebufferTextureArguments
-      );
-  PT(GraphicsOutput) baseBuffer = baseFramebufferTexture.buffer;
-  PT(Camera)         baseCamera = baseFramebufferTexture.camera;
-  NodePath           baseNP     = baseFramebufferTexture.shaderNP;
-  baseBuffer->add_render_texture
-    ( NULL
-    , GraphicsOutput::RTM_bind_or_copy
-    , GraphicsOutput::RTP_aux_rgba_0
-    );
-  baseBuffer->set_clear_active(3, true);
-  baseBuffer->set_clear_value( 3, framebufferTextureArguments.clearColor);
-  baseBuffer->set_sort
-    ( std::max
-        ( ssaoBlurBuffer->get_sort() + 1
-        , UNSORTED_RENDER_SORT_ORDER + 1
-        )
-    );
-  baseNP.set_shader(baseShader);
-  baseNP.set_shader_input("pi",                PI_SHADER_INPUT);
-  baseNP.set_shader_input("gamma",             GAMMA_SHADER_INPUT);
-  baseNP.set_shader_input("ssaoBlurTexture",   ssaoBlurTexture);
-  baseNP.set_shader_input("flowTexture",       stillFlowTexture);
-  baseNP.set_shader_input("normalMapsEnabled", normalMapsEnabled);
-  baseNP.set_shader_input("blinnPhongEnabled", blinnPhongEnabled);
-  baseNP.set_shader_input("fresnelEnabled",    fresnelEnabled);
-  baseNP.set_shader_input("rimLightEnabled",   rimLightEnabled);
-  baseNP.set_shader_input("celShadingEnabled", celShadingEnabled);
-  baseNP.set_shader_input("flowMapsEnabled",   flowMapsEnabled);
-  baseNP.set_shader_input("specularOnly",      LVecBase2f(0, 0));
-  baseNP.set_shader_input("isParticle",        LVecBase2f(0, 0));
-  baseNP.set_shader_input("isWater",           LVecBase2f(0, 0));
-  baseNP.set_shader_input("sunPosition",       LVecBase2f(sunlightP, 0));
-  baseCamera->set_initial_state(baseNP.get_state());
-  baseCamera->set_tag_state_key("baseBuffer");
-  baseCamera->set_tag_state("isParticle", isSmokeNP.get_state());
-  baseCamera->set_tag_state("isWater",    isWaterNP.get_state());
-  baseCamera->set_camera_mask(BitMask32::bit(6));
-  smokeNP.set_tag("baseBuffer", "isParticle");
-  waterNP.set_tag("baseBuffer", "isWater");
-  PT(Texture) baseTexture     = baseBuffer->get_texture(0);
-  PT(Texture) specularTexture = baseBuffer->get_texture(1);
 
-  framebufferTextureArguments.aux_rgba = 0;
-  framebufferTextureArguments.useScene = false;
-  framebufferTextureArguments.name     = "refraction";
+  geometry1NP.set_shader(geometryBufferShader1);
+  geometry1NP.set_shader_input("normalMapsEnabled",  normalMapsEnabled);
+  geometry1NP.set_shader_input("flowTexture",        stillFlowTexture);
+  geometry1NP.set_shader_input("foamPatternTexture", blankTexture);
+  geometry1NP.set_shader_input("flowMapsEnabled",    flowMapsEnabled);
+  geometry1Camera->set_initial_state(geometry1NP.get_state());
+  geometry1Camera->set_tag_state_key("geometry1Buffer");
+  geometry1Camera->set_tag_state("isWater", isWaterNP.get_state());
+  geometry1Camera->set_camera_mask(BitMask32::bit(2));
+  PT(Texture) positionTexture1        = geometry1Buffer->get_texture(0);
+  PT(Texture) normalTexture1          = geometry1Buffer->get_texture(1);
+  PT(Texture) reflectionMaskTexture   = geometry1Buffer->get_texture(2);
+  PT(Texture) refractionMaskTexture   = geometry1Buffer->get_texture(3);
+  PT(Texture) foamMaskTexture         = geometry1Buffer->get_texture(4);
+  PT(Lens)    geometryCameraLens1     = geometry1Camera->get_lens();
+  waterNP.set_tag("geometry1Buffer", "isWater");
 
-  FramebufferTexture refractionFramebufferTexture =
-    generateFramebufferTexture
-      ( framebufferTextureArguments
-      );
-  PT(GraphicsOutput) refractionBuffer = refractionFramebufferTexture.buffer;
-  PT(Camera)         refractionCamera = refractionFramebufferTexture.camera;
-  NodePath           refractionNP     = refractionFramebufferTexture.shaderNP;
-  refractionBuffer->set_sort(baseBuffer->get_sort() + 1);
-  refractionNP.set_shader(refractionShader);
-  refractionNP.set_shader_input("pi",                     PI_SHADER_INPUT);
-  refractionNP.set_shader_input("gamma",                  GAMMA_SHADER_INPUT);
-  refractionNP.set_shader_input("uvTexture",              refractionUvTexture);
-  refractionNP.set_shader_input("maskTexture",            refractionMaskTexture);
-  refractionNP.set_shader_input("positionFromTexture",    positionTexture1);
-  refractionNP.set_shader_input("positionToTexture",      positionTexture0);
-  refractionNP.set_shader_input("backgroundColorTexture", baseTexture);
-  refractionNP.set_shader_input("sunPosition",            LVecBase2f(sunlightP, 0));
-  refractionCamera->set_initial_state(refractionNP.get_state());
-  PT(Texture) refractionTexture = refractionBuffer->get_texture();
 
-  framebufferTextureArguments.name = "foam";
 
-  FramebufferTexture foamFramebufferTexture =
-    generateFramebufferTexture
-      ( framebufferTextureArguments
-      );
-  PT(GraphicsOutput) foamBuffer = foamFramebufferTexture.buffer;
-  PT(Camera)         foamCamera = foamFramebufferTexture.camera;
-  NodePath           foamNP     = foamFramebufferTexture.shaderNP;
-  foamBuffer->set_sort(geometryBuffer1->get_sort() + 1);
-  foamNP.set_shader(foamShader);
-  foamNP.set_shader_input("pi",                  PI_SHADER_INPUT);
-  foamNP.set_shader_input("gamma",               GAMMA_SHADER_INPUT);
-  foamNP.set_shader_input("maskTexture",         foamMaskTexture);
-  foamNP.set_shader_input("foamDepth",           foamDepth);
-  foamNP.set_shader_input("sunPosition",         LVecBase2f(sunlightP, 0));
-  foamNP.set_shader_input("viewWorldMat",        currentViewWorldMat);
-  foamNP.set_shader_input("positionFromTexture", positionTexture1);
-  foamNP.set_shader_input("positionToTexture",   positionTexture0);
-  foamCamera->set_initial_state(foamNP.get_state());
-  PT(Texture) foamTexture = foamBuffer->get_texture();
-
-  framebufferTextureArguments.name = "reflectionColor";
-
-  FramebufferTexture reflectionColorFramebufferTexture =
-    generateFramebufferTexture
-      ( framebufferTextureArguments
-      );
-  PT(GraphicsOutput) reflectionColorBuffer = reflectionColorFramebufferTexture.buffer;
-  PT(Camera)         reflectionColorCamera = reflectionColorFramebufferTexture.camera;
-  NodePath           reflectionColorNP     = reflectionColorFramebufferTexture.shaderNP;
-  reflectionColorBuffer->set_sort(refractionBuffer->get_sort() + 1);
-  reflectionColorNP.set_shader(reflectionColorShader);
-  reflectionColorNP.set_shader_input("colorTexture", refractionTexture);
-  reflectionColorNP.set_shader_input("uvTexture",    reflectionUvTexture);
-  reflectionColorCamera->set_initial_state(reflectionColorNP.get_state());
-  PT(Texture) reflectionColorTexture = reflectionColorBuffer->get_texture();
-
-  framebufferTextureArguments.name = "reflectionColorBlur";
-
-  FramebufferTexture reflectionColorBlurFramebufferTexture =
-    generateFramebufferTexture
-      ( framebufferTextureArguments
-      );
-  PT(GraphicsOutput) reflectionColorBlurBuffer = reflectionColorBlurFramebufferTexture.buffer;
-  PT(Camera)         reflectionColorBlurCamera = reflectionColorBlurFramebufferTexture.camera;
-  NodePath           reflectionColorBlurNP     = reflectionColorBlurFramebufferTexture.shaderNP;
-  reflectionColorBlurBuffer->set_sort(reflectionColorBuffer->get_sort() + 1);
-  reflectionColorBlurNP.set_shader(boxBlurShader);
-  reflectionColorBlurNP.set_shader_input("colorTexture", reflectionColorTexture);
-  reflectionColorBlurNP.set_shader_input("parameters",   LVecBase2f(8, 1));
-  reflectionColorBlurCamera->set_initial_state(reflectionColorBlurNP.get_state());
-  PT(Texture) reflectionColorBlurTexture = reflectionColorBlurBuffer->get_texture();
-
-  framebufferTextureArguments.name = "reflection";
-
-  FramebufferTexture reflectionFramebufferTexture =
-    generateFramebufferTexture
-      ( framebufferTextureArguments
-      );
-  PT(GraphicsOutput) reflectionBuffer = reflectionFramebufferTexture.buffer;
-  NodePath           reflectionNP     = reflectionFramebufferTexture.shaderNP;
-  reflectionBuffer->set_sort(reflectionColorBlurBuffer->get_sort() + 1);
-  reflectionNP.set_shader(reflectionShader);
-  reflectionNP.set_shader_input("colorTexture",     reflectionColorTexture);
-  reflectionNP.set_shader_input("colorBlurTexture", reflectionColorBlurTexture);
-  reflectionNP.set_shader_input("maskTexture",      reflectionMaskTexture);
-  reflectionFramebufferTexture.camera->set_initial_state(reflectionNP.get_state());
-  PT(Texture) reflectionTexture = reflectionBuffer->get_texture();
-
-  framebufferTextureArguments.name = "baseCombine";
-
-  FramebufferTexture baseCombineFramebufferTexture =
-    generateFramebufferTexture
-      ( framebufferTextureArguments
-      );
-  PT(GraphicsOutput) baseCombineBuffer = baseCombineFramebufferTexture.buffer;
-  PT(Camera)         baseCombineCamera = baseCombineFramebufferTexture.camera;
-  NodePath           baseCombineNP     = baseCombineFramebufferTexture.shaderNP;
-  baseCombineBuffer->set_sort(reflectionBuffer->get_sort() + 1);
-  baseCombineNP.set_shader(baseCombineShader);
-  baseCombineNP.set_shader_input("baseTexture",       baseTexture);
-  baseCombineNP.set_shader_input("refractionTexture", refractionTexture);
-  baseCombineNP.set_shader_input("foamTexture",       foamTexture);
-  baseCombineNP.set_shader_input("reflectionTexture", reflectionTexture);
-  baseCombineNP.set_shader_input("specularTexture",   specularTexture);
-  baseCombineCamera->set_initial_state(baseCombineNP.get_state());
-  PT(Texture) baseCombineTexture = baseCombineBuffer->get_texture();
-
-  framebufferTextureArguments.name = "sharpen";
-
-  FramebufferTexture sharpenFramebufferTexture =
-    generateFramebufferTexture
-      ( framebufferTextureArguments
-      );
-  PT(GraphicsOutput) sharpenBuffer = sharpenFramebufferTexture.buffer;
-  NodePath           sharpenNP     = sharpenFramebufferTexture.shaderNP;
-  sharpenBuffer->set_sort(baseCombineBuffer->get_sort() + 1);
-  sharpenNP.set_shader(sharpenShader);
-  sharpenNP.set_shader_input("colorTexture", baseCombineTexture);
-  sharpenNP.set_shader_input("enabled",      sharpenEnabled);
-  PT(Camera) sharpenCamera = sharpenFramebufferTexture.camera;
-  sharpenCamera->set_initial_state(sharpenNP.get_state());
-  PT(Texture) sharpenTexture = sharpenBuffer->get_texture();
-
-  framebufferTextureArguments.name = "posterize";
-
-  FramebufferTexture posterizeFramebufferTexture =
-    generateFramebufferTexture
-      ( framebufferTextureArguments
-      );
-  PT(GraphicsOutput) posterizeBuffer = posterizeFramebufferTexture.buffer;
-  NodePath           posterizeNP     = posterizeFramebufferTexture.shaderNP;
-  posterizeBuffer->set_sort(sharpenBuffer->get_sort() + 1);
-  posterizeNP.set_shader(posterizeShader);
-  posterizeNP.set_shader_input("gamma",           GAMMA_SHADER_INPUT);
-  posterizeNP.set_shader_input("colorTexture",    sharpenTexture);
-  posterizeNP.set_shader_input("positionTexture", positionTexture2);
-  posterizeNP.set_shader_input("enabled",         posterizeEnabled);
-  PT(Camera) posterizeCamera = posterizeFramebufferTexture.camera;
-  posterizeCamera->set_initial_state(posterizeNP.get_state());
-  PT(Texture) posterizeTexture = posterizeBuffer->get_texture();
-
-  framebufferTextureArguments.name = "bloom";
-
-  FramebufferTexture bloomFramebufferTexture =
-    generateFramebufferTexture
-      ( framebufferTextureArguments
-      );
-  PT(GraphicsOutput) bloomBuffer = bloomFramebufferTexture.buffer;
-  PT(Camera)         bloomCamera = bloomFramebufferTexture.camera;
-  NodePath           bloomNP     = bloomFramebufferTexture.shaderNP;
-  bloomBuffer->set_sort(posterizeBuffer->get_sort() + 1);
-  bloomNP.set_shader(bloomShader);
-  bloomNP.set_shader_input("colorTexture", posterizeTexture);
-  bloomNP.set_shader_input("enabled",      bloomEnabled);
-  bloomCamera->set_initial_state(bloomNP.get_state());
-  PT(Texture) bloomTexture = bloomBuffer->get_texture();
-
-  framebufferTextureArguments.name = "sceneCombine";
-
-  FramebufferTexture sceneCombineFramebufferTexture =
-    generateFramebufferTexture
-      ( framebufferTextureArguments
-      );
-  PT(GraphicsOutput) sceneCombineBuffer = sceneCombineFramebufferTexture.buffer;
-  PT(Camera)         sceneCombineCamera = sceneCombineFramebufferTexture.camera;
-  NodePath           sceneCombineNP     = sceneCombineFramebufferTexture.shaderNP;
-  sceneCombineBuffer->set_sort(bloomBuffer->get_sort() + 1);
-  sceneCombineNP.set_shader(sceneCombineShader);
-  sceneCombineNP.set_shader_input("pi",                  PI_SHADER_INPUT);
-  sceneCombineNP.set_shader_input("gamma",               GAMMA_SHADER_INPUT);
-  sceneCombineNP.set_shader_input("lookupTableTextureN", colorLookupTableTextureN);
-  sceneCombineNP.set_shader_input("backgroundColor0",    backgroundColor[0]);
-  sceneCombineNP.set_shader_input("backgroundColor1",    backgroundColor[1]);
-  sceneCombineNP.set_shader_input("baseTexture",         posterizeTexture);
-  sceneCombineNP.set_shader_input("bloomTexture",        bloomTexture);
-  sceneCombineNP.set_shader_input("fogTexture",          fogTexture);
-  sceneCombineNP.set_shader_input("sunPosition",         LVecBase2f(sunlightP, 0));
-  PT(Texture) sceneCombineTexture = sceneCombineBuffer->get_texture();
-  sceneCombineCamera->set_initial_state(sceneCombineNP.get_state());
-
-  framebufferTextureArguments.clearColor = backgroundColor[1];
-  framebufferTextureArguments.name       = "outOfFocus";
-
-  FramebufferTexture outOfFocusFramebufferTexture =
-    generateFramebufferTexture
-      ( framebufferTextureArguments
-      );
-  PT(GraphicsOutput) outOfFocusBuffer = outOfFocusFramebufferTexture.buffer;
-  PT(Camera)         outOfFocusCamera = outOfFocusFramebufferTexture.camera;
-  NodePath           outOfFocusNP     = outOfFocusFramebufferTexture.shaderNP;
-  outOfFocusBuffer->set_sort(sceneCombineBuffer->get_sort() + 1);
-  outOfFocusNP.set_shader(boxBlurShader);
-  outOfFocusNP.set_shader_input("colorTexture", sceneCombineTexture);
-  outOfFocusNP.set_shader_input("parameters",   LVecBase2f(2, 2));
-  outOfFocusCamera->set_initial_state(outOfFocusNP.get_state());
-  PT(Texture) outOfFocusTexture = outOfFocusBuffer->get_texture();
-
-  framebufferTextureArguments.name = "dilatedOutOfFocus";
-
-  FramebufferTexture dilatedOutOfFocusFramebufferTexture =
-    generateFramebufferTexture
-      ( framebufferTextureArguments
-      );
-  PT(GraphicsOutput) dilatedOutOfFocusBuffer = dilatedOutOfFocusFramebufferTexture.buffer;
-  PT(Camera)         dilatedOutOfFocusCamera = dilatedOutOfFocusFramebufferTexture.camera;
-  NodePath           dilatedOutOfFocusNP     = dilatedOutOfFocusFramebufferTexture.shaderNP;
-  dilatedOutOfFocusBuffer->set_sort(outOfFocusBuffer->get_sort() + 1);
-  dilatedOutOfFocusNP.set_shader(dilationShader);
-  dilatedOutOfFocusNP.set_shader_input("colorTexture", outOfFocusTexture);
-  dilatedOutOfFocusNP.set_shader_input("parameters",   LVecBase2f(4, 2));
-  dilatedOutOfFocusCamera->set_initial_state(dilatedOutOfFocusNP.get_state());
-  PT(Texture) dilatedOutOfFocusTexture = dilatedOutOfFocusBuffer->get_texture();
-
-  framebufferTextureArguments.aux_rgba = 1;
-  framebufferTextureArguments.name     = "depthOfField";
-
-  FramebufferTexture depthOfFieldFramebufferTexture =
-    generateFramebufferTexture
-      ( framebufferTextureArguments
-      );
-  PT(GraphicsOutput) depthOfFieldBuffer = depthOfFieldFramebufferTexture.buffer;
-  NodePath           depthOfFieldNP     = depthOfFieldFramebufferTexture.shaderNP;
-  depthOfFieldBuffer->add_render_texture
-    ( NULL
-    , GraphicsOutput::RTM_bind_or_copy
-    , GraphicsOutput::RTP_aux_rgba_0
-    );
-  depthOfFieldBuffer->set_clear_active(3, true);
-  depthOfFieldBuffer->set_clear_value( 3, framebufferTextureArguments.clearColor);
-  depthOfFieldBuffer->set_sort(dilatedOutOfFocusBuffer->get_sort() + 1);
-  depthOfFieldNP.set_shader(depthOfFieldShader);
-  depthOfFieldNP.set_shader_input("positionTexture",   positionTexture0);
-  depthOfFieldNP.set_shader_input("focusTexture",      sceneCombineTexture);
-  depthOfFieldNP.set_shader_input("outOfFocusTexture", dilatedOutOfFocusTexture);
-  depthOfFieldNP.set_shader_input("mouseFocusPoint",   mouseFocusPoint);
-  depthOfFieldNP.set_shader_input("nearFar",           cameraNearFar);
-  depthOfFieldNP.set_shader_input("enabled",           depthOfFieldEnabled);
-  PT(Camera) depthOfFieldCamera = depthOfFieldFramebufferTexture.camera;
-  depthOfFieldCamera->set_initial_state(depthOfFieldNP.get_state());
-  PT(Texture) depthOfFieldTexture0 = depthOfFieldBuffer->get_texture(0);
-  PT(Texture) depthOfFieldTexture1 = depthOfFieldBuffer->get_texture(1);
-
-  framebufferTextureArguments.aux_rgba = 0;
-  framebufferTextureArguments.name     = "outline";
-
-  FramebufferTexture outlineFramebufferTexture =
-    generateFramebufferTexture
-      ( framebufferTextureArguments
-      );
-  PT(GraphicsOutput) outlineBuffer = outlineFramebufferTexture.buffer;
-  PT(Camera)         outlineCamera = outlineFramebufferTexture.camera;
-  NodePath           outlineNP     = outlineFramebufferTexture.shaderNP;
-  outlineBuffer->set_sort(depthOfFieldBuffer->get_sort() + 1);
-  outlineNP.set_shader(outlineShader);
-  outlineNP.set_shader_input("gamma",               GAMMA_SHADER_INPUT);
-  outlineNP.set_shader_input("positionTexture",     positionTexture0);
-  outlineNP.set_shader_input("colorTexture",        depthOfFieldTexture0);
-  outlineNP.set_shader_input("noiseTexture",        colorNoiseTexture);
-  outlineNP.set_shader_input("depthOfFieldTexture", depthOfFieldTexture1);
-  outlineNP.set_shader_input("fogTexture",          fogTexture);
-  outlineNP.set_shader_input("nearFar",             cameraNearFar);
-  outlineNP.set_shader_input("enabled",             outlineEnabled);
-  outlineCamera->set_initial_state(outlineNP.get_state());
-  PT(Texture) outlineTexture = outlineBuffer->get_texture();
-
-  framebufferTextureArguments.name = "painterly";
-
-  FramebufferTexture painterlyFramebufferTexture =
-    generateFramebufferTexture
-      ( framebufferTextureArguments
-      );
-  PT(GraphicsOutput) painterlyBuffer = painterlyFramebufferTexture.buffer;
-  NodePath           painterlyNP     = painterlyFramebufferTexture.shaderNP;
-  painterlyBuffer->set_sort(outlineBuffer->get_sort() + 1);
-  painterlyNP.set_shader(kuwaharaFilterShader);
-  painterlyNP.set_shader_input("colorTexture", outlineTexture);
-  painterlyNP.set_shader_input("parameters",   LVecBase2f(0, 0));
-  PT(Camera) painterlyCamera = painterlyFramebufferTexture.camera;
-  painterlyCamera->set_initial_state(painterlyNP.get_state());
-  PT(Texture) painterlyTexture = painterlyBuffer->get_texture();
-
-  framebufferTextureArguments.name = "pixelize";
-
-  FramebufferTexture pixelizeFramebufferTexture =
-    generateFramebufferTexture
-      ( framebufferTextureArguments
-      );
-  PT(GraphicsOutput) pixelizeBuffer = pixelizeFramebufferTexture.buffer;
-  NodePath           pixelizeNP     = pixelizeFramebufferTexture.shaderNP;
-  pixelizeBuffer->set_sort(painterlyBuffer->get_sort() + 1);
-  pixelizeNP.set_shader(pixelizeShader);
-  pixelizeNP.set_shader_input("colorTexture",    painterlyTexture);
-  pixelizeNP.set_shader_input("positionTexture", positionTexture2);
-  pixelizeNP.set_shader_input("parameters",      LVecBase2f(5, 0));
-  pixelizeNP.set_shader_input("enabled",         pixelizeEnabled);
-  PT(Camera) pixelizeCamera = pixelizeFramebufferTexture.camera;
-  pixelizeCamera->set_initial_state(pixelizeNP.get_state());
-  PT(Texture) pixelizeTexture = pixelizeBuffer->get_texture();
-
-  framebufferTextureArguments.name = "motionBlur";
-
-  FramebufferTexture motionBlurFramebufferTexture =
-    generateFramebufferTexture
-      ( framebufferTextureArguments
-      );
-  PT(GraphicsOutput) motionBlurBuffer = motionBlurFramebufferTexture.buffer;
-  NodePath           motionBlurNP     = motionBlurFramebufferTexture.shaderNP;
-  motionBlurBuffer->set_sort(pixelizeBuffer->get_sort() + 1);
-  motionBlurNP.set_shader(motionBlurShader);
-  motionBlurNP.set_shader_input("previousViewWorldMat",    previousViewWorldMat);
-  motionBlurNP.set_shader_input("worldViewMat",            render.get_transform(cameraNP)->get_mat());
-  motionBlurNP.set_shader_input("lensProjection",          geometryCameraLens2->get_projection_mat());
-  motionBlurNP.set_shader_input("positionTexture",         positionTexture2);
-  motionBlurNP.set_shader_input("colorTexture",            pixelizeTexture);
-  motionBlurNP.set_shader_input("motionBlurEnabled",       motionBlurEnabled);
-  motionBlurNP.set_shader_input("parameters",              LVecBase2f(2, 1.0));
-  PT(Camera) motionBlurCamera = motionBlurFramebufferTexture.camera;
-  motionBlurCamera->set_initial_state(motionBlurNP.get_state());
-  PT(Texture) motionBlurTexture = motionBlurBuffer->get_texture();
-
-  framebufferTextureArguments.name = "filmGrain";
-
-  FramebufferTexture filmGrainFramebufferTexture =
-    generateFramebufferTexture
-      ( framebufferTextureArguments
-      );
-  PT(GraphicsOutput) filmGrainBuffer = filmGrainFramebufferTexture.buffer;
-  NodePath           filmGrainNP     = filmGrainFramebufferTexture.shaderNP;
-  filmGrainBuffer->set_sort(motionBlurBuffer->get_sort() + 1);
-  filmGrainNP.set_shader(filmGrainShader);
-  filmGrainNP.set_shader_input("pi",           PI_SHADER_INPUT);
-  filmGrainNP.set_shader_input("colorTexture", motionBlurTexture);
-  filmGrainNP.set_shader_input("enabled",      filmGrainEnabled);
-  PT(Camera) filmGrainCamera = filmGrainFramebufferTexture.camera;
-  filmGrainCamera->set_initial_state(filmGrainNP.get_state());
-  PT(Texture) filmGrainTexture = filmGrainBuffer->get_texture();
-
-  framebufferTextureArguments.name = "lookupTable";
-
-  FramebufferTexture lookupTableFramebufferTexture =
-    generateFramebufferTexture
-      ( framebufferTextureArguments
-      );
-  PT(GraphicsOutput) lookupTableBuffer = lookupTableFramebufferTexture.buffer;
-  NodePath           lookupTableNP     = lookupTableFramebufferTexture.shaderNP;
-  lookupTableBuffer->set_sort(filmGrainBuffer->get_sort() + 1);
-  lookupTableNP.set_shader(lookupTableShader);
-  lookupTableNP.set_shader_input("pi",                  PI_SHADER_INPUT);
-  lookupTableNP.set_shader_input("gamma",               GAMMA_SHADER_INPUT);
-  lookupTableNP.set_shader_input("colorTexture",        filmGrainTexture);
-  lookupTableNP.set_shader_input("lookupTableTextureN", colorLookupTableTextureN);
-  lookupTableNP.set_shader_input("lookupTableTexture0", colorLookupTableTexture0);
-  lookupTableNP.set_shader_input("lookupTableTexture1", colorLookupTableTexture1);
-  lookupTableNP.set_shader_input("sunPosition",         LVecBase2f(sunlightP, 0));
-  lookupTableNP.set_shader_input("enabled",             lookupTableEnabled);
-  PT(Camera) lookupTableCamera = lookupTableFramebufferTexture.camera;
-  lookupTableCamera->set_initial_state(lookupTableNP.get_state());
-  PT(Texture) lookupTableTexture = lookupTableBuffer->get_texture();
-
-  framebufferTextureArguments.name = "gammaCorrection";
-
-  FramebufferTexture gammaCorrectionFramebufferTexture =
-    generateFramebufferTexture
-      ( framebufferTextureArguments
-      );
-  PT(GraphicsOutput) gammaCorrectionBuffer = gammaCorrectionFramebufferTexture.buffer;
-  NodePath           gammaCorrectionNP     = gammaCorrectionFramebufferTexture.shaderNP;
-  gammaCorrectionBuffer->set_sort(lookupTableBuffer->get_sort() + 1);
-  gammaCorrectionNP.set_shader(gammaCorrectionShader);
-  gammaCorrectionNP.set_shader_input("gamma",        GAMMA_SHADER_INPUT);
-  gammaCorrectionNP.set_shader_input("colorTexture", lookupTableTexture);
-  PT(Camera) gammaCorrectionCamera = gammaCorrectionFramebufferTexture.camera;
-  gammaCorrectionCamera->set_initial_state(gammaCorrectionNP.get_state());
-
-  graphicsOutput->set_sort(gammaCorrectionBuffer->get_sort() + 1);
+  
+  // graphicsOutput->set_sort(gammaCorrectionBuffer->get_sort() + 1);
+  // does not have to set order for graphicsOutput
 
   int showBufferIndex = 0;
 
   std::vector<std::tuple<std::string, PT(GraphicsOutput), int>> bufferArray =
-    { std::make_tuple("Positions 0",          geometryBuffer0,           0)
-    , std::make_tuple("Normals 0",            geometryBuffer0,           1)
-    , std::make_tuple("Positions 1",          geometryBuffer1,           0)
-    , std::make_tuple("Normals 1",            geometryBuffer1,           1)
-    , std::make_tuple("Reflection Mask",      geometryBuffer1,           2)
-    , std::make_tuple("Refraction Mask",      geometryBuffer1,           3)
-    , std::make_tuple("Foam Mask",            geometryBuffer1,           4)
-    , std::make_tuple("Positions 2",          geometryBuffer2,           0)
-    , std::make_tuple("Smoke Mask",           geometryBuffer2,           1)
-    , std::make_tuple("SSAO",                 ssaoBuffer,                0)
-    , std::make_tuple("SSAO Blur",            ssaoBlurBuffer,            0)
-    , std::make_tuple("Refraction UV",        refractionUvBuffer,        0)
-    , std::make_tuple("Refraction",           refractionBuffer,          0)
-    , std::make_tuple("Reflection UV",        reflectionUvBuffer,        0)
-    , std::make_tuple("Reflection Color",     reflectionColorBuffer,     0)
-    , std::make_tuple("Reflection Blur",      reflectionColorBlurBuffer, 0)
-    , std::make_tuple("Reflection",           reflectionBuffer,          0)
-    , std::make_tuple("Foam",                 foamBuffer,                0)
-    , std::make_tuple("Base",                 baseBuffer,                0)
-    , std::make_tuple("Specular",             baseBuffer,                1)
-    , std::make_tuple("Base Combine",         baseCombineBuffer,         0)
-    , std::make_tuple("Painterly",            painterlyBuffer,           0)
-    , std::make_tuple("Posterize",            posterizeBuffer,           0)
-    , std::make_tuple("Bloom",                bloomBuffer,               0)
-    , std::make_tuple("Outline",              outlineBuffer,             0)
-    , std::make_tuple("Fog",                  fogBuffer,                 0)
-    , std::make_tuple("Scene Combine",        sceneCombineBuffer,        0)
-    , std::make_tuple("Out of Focus",         outOfFocusBuffer,          0)
-    , std::make_tuple("Dilation",             dilatedOutOfFocusBuffer,   0)
-    , std::make_tuple("Depth of Field Blur",  depthOfFieldBuffer,        1)
-    , std::make_tuple("Depth of Field",       depthOfFieldBuffer,        0)
-    , std::make_tuple("Pixelize",             pixelizeBuffer,            0)
-    , std::make_tuple("Motion Blur",          motionBlurBuffer,          0)
-    , std::make_tuple("Film Grain",           filmGrainBuffer,           0)
-    , std::make_tuple("Lookup Table",         lookupTableBuffer,         0)
-    , std::make_tuple("Gamma Correction",     gammaCorrectionBuffer,     0)
+    { std::make_tuple("Test",                   testBuffer,                0),
+      std::make_tuple("Positions 0",            geometry0Buffer,           0),
+      std::make_tuple("Normals 0",              geometry0Buffer,           1),
+      std::make_tuple("Positions 1",            geometry1Buffer,           0),
+      std::make_tuple("Normals 1",              geometry1Buffer,           1),
+      std::make_tuple("Reflection Mask",        geometry1Buffer,           2),
+      std::make_tuple("Refraction Mask",        geometry1Buffer,           3),
+      std::make_tuple("Foam Mask",              geometry1Buffer,           4)
     };
+
+  
 
   showBufferIndex = bufferArray.size() - 1;
 
@@ -1538,6 +1049,7 @@ int main( int argc, char *argv[])
         statusText  = "Reset";
       }
 
+      // text!
       auto toggleStatus =
         [&](LVecBase2f enabled, std::string effect) -> void {
           statusAlpha = 1.0;
@@ -1846,7 +1358,7 @@ int main( int argc, char *argv[])
 
     currentViewWorldMat = cameraNP.get_transform(render)->get_mat();
 
-    geometryNP0.set_shader_input("normalMapsEnabled", normalMapsEnabled);
+    /*geometryNP0.set_shader_input("normalMapsEnabled", normalMapsEnabled);
     geometryNP0.set_shader_input("flowMapsEnabled",   flowMapsEnabled);
     geometryCamera0->set_initial_state(geometryNP0.get_state());
 
@@ -1926,7 +1438,7 @@ int main( int argc, char *argv[])
 
     lookupTableNP.set_shader_input("enabled",     lookupTableEnabled);
     lookupTableNP.set_shader_input("sunPosition", LVecBase2f(sunlightP, 0));
-    lookupTableCamera->set_initial_state(lookupTableNP.get_state());
+    lookupTableCamera->set_initial_state(lookupTableNP.get_state());*/
 
     previousViewWorldMat = currentViewWorldMat;
 

@@ -1,6 +1,7 @@
 #version 150
 
 uniform mat4 p3d_ModelViewProjectionMatrix;
+// provided as default!!!!
 
 in vec4 p3d_Vertex;
 
