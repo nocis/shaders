@@ -34,6 +34,7 @@ in vec4 vertexPosition; // view space unprojected position!!!
                         //                                     ( after clipping and divided by w )
 
 
+// all output textues are vec4
 out vec4 positionOut;
 out vec4 normalOut;
 
@@ -61,5 +62,5 @@ void main()
 
 
     positionOut = vertexPosition;
-    normalOut   = vec4(normal, 1);
+    normalOut = vec4(normal, 1);
 }

@@ -569,7 +569,15 @@ int main
 
 
   // false using scene lead to a new camera for rendering!  not maincamera, so you cannot
-  // control!!!
+  // control it!!!
+
+
+  // deferred : reduce the number of lighting calculations ( per pixel per light , screen space calculation )
+  //          : calculation after culling, discard objects behind transparency in the first phase 
+  //          : extra passes for transparency material (e.g. smoke, water )
+  //
+  // forward  : reduce the memory for G-buffer ( per fragment per light , need to traverse its geometry )
+
 
   NodePath mainCameraNP = NodePath("mainCamera");
   mainCameraNP.set_shader(discardShader);
@@ -686,7 +694,7 @@ int main
 
 
   /********************************************************************************
-  2. geometry1 pass
+  2. geometry1 pass ( water )
      --positionTexture1        
      --normalTexture1          
      --reflectionMaskTexture   

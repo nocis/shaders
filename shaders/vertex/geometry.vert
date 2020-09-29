@@ -23,6 +23,7 @@ in vec2 p3d_MultiTexCoord1; // UV for Nth texture , 1
 out vec4 vertexPosition; // view space unprojected position!!!
 
 out vec2 normalCoord;   // normal texture coord
+out vec2 diffuseCoord;  // diffuseCoord
 
 out vec3 vertexNormal; // z , out of surface
 out vec3 binormal;     // y , binormals and tangents can associated with the Nth texture
@@ -47,5 +48,6 @@ void main()
 
 
     // output to the fragment shader, the UV coordinates for the normal map.
-    normalCoord   = p3d_MultiTexCoord1;
+    normalCoord = p3d_MultiTexCoord1;
+    diffuseCoord = p3d_MultiTexCoord0;
 }
