@@ -17,6 +17,7 @@ uniform sampler2D p3d_Texture4;
 
 // in from vertex shader
 in vec4 vertexPosition;
+//in vec4 vertexColor;
 in vec2 normalCoord; 
 in vec3 vertexNormal;
 in vec3 binormal;

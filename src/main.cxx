@@ -518,13 +518,13 @@ int main
 
   generateLights(render, false);
 
-  PT(Shader) discardShader               = loadShader("discard", "discard");
-  PT(Shader) testShader                  = loadShader("test",    "test");
-  PT(Shader) geometryBufferShader0       = loadShader("geometry","geometry0");
-  PT(Shader) geometryBufferShader1       = loadShader("geometry","geometry1");
-  //PT(Shader) geometryBufferShader2       = loadShader("base",    "geometry-buffer-2");
-  //PT(Shader) foamShader                  = loadShader("basic",   "foam");
-  //PT(Shader) fogShader                   = loadShader("basic",   "fog");
+  PT(Shader) discardShader               = loadShader("discard",       "discard");
+  PT(Shader) testShader                  = loadShader("test",          "test");
+  PT(Shader) geometryBufferShader0       = loadShader("geometry",      "geometry0");
+  PT(Shader) geometryBufferShader1       = loadShader("geometry",      "geometry1");
+  PT(Shader) geometryBufferShader2       = loadShader("geometry",      "geometry2");
+  //PT(Shader) foamShader                  = loadShader("basic",  "foam");
+  PT(Shader) fogShader                   = loadShader("renderBasic",   "fog");
   //PT(Shader) boxBlurShader               = loadShader("basic",   "box-blur");
   //PT(Shader) motionBlurShader            = loadShader("basic",   "motion-blur");
   //PT(Shader) kuwaharaFilterShader        = loadShader("basic",   "kuwahara-filter");
@@ -598,7 +598,9 @@ int main
   FramebufferTextureArguments framebufferTextureArguments;
 
 
-
+  // particle smoke and water attached to render3d
+  // available when these Nodepath set tag value match with "isSmokeNP" or "isWaterNP" of maincamera(render3d),
+  // this help to use new states and to replace the shader input!!!   
 
 
 
@@ -624,7 +626,7 @@ int main
   framebufferTextureArguments.graphicsOutput = graphicsOutput;
   framebufferTextureArguments.graphicsEngine = graphicsEngine;
   framebufferTextureArguments.bitplane       = GraphicsOutput::RTP_color;
-  framebufferTextureArguments.rgbaBits       = rgba8;
+  framebufferTextureArguments.rgbaBits       = rgba32;
   framebufferTextureArguments.clearColor     = LColor(0, 0, 0, 0);
   framebufferTextureArguments.setFloatColor  = true;
   framebufferTextureArguments.setSrgbColor   = false;
@@ -664,7 +666,7 @@ int main
   framebufferTextureArguments.graphicsOutput = graphicsOutput;
   framebufferTextureArguments.graphicsEngine = graphicsEngine;
   framebufferTextureArguments.bitplane       = GraphicsOutput::RTP_color;
-  framebufferTextureArguments.rgbaBits       = rgba8;
+  framebufferTextureArguments.rgbaBits       = rgba32;
   framebufferTextureArguments.clearColor     = LColor(0, 0, 0, 0);
   framebufferTextureArguments.setFloatColor  = true;
   framebufferTextureArguments.setSrgbColor   = false;
@@ -708,7 +710,7 @@ int main
   framebufferTextureArguments.graphicsOutput = graphicsOutput;
   framebufferTextureArguments.graphicsEngine = graphicsEngine;
   framebufferTextureArguments.bitplane       = GraphicsOutput::RTP_color;
-  framebufferTextureArguments.rgbaBits       = rgba8;
+  framebufferTextureArguments.rgbaBits       = rgba32;
   framebufferTextureArguments.clearColor     = LColor(0, 0, 0, 0);
   framebufferTextureArguments.setFloatColor  = true;
   framebufferTextureArguments.setSrgbColor   = false;
@@ -764,6 +766,95 @@ int main
 
 
 
+  /********************************************************************************
+  3. geometry2 pass ( smoke )
+     --positionTexture2  ( with somke particle pos )              
+     --smokeMaskTexture  ( texture per particle )      
+     --geometryCameraLens2     
+  ********************************************************************************/
+  // rgba8 : 32-bit-per-pixel
+
+  framebufferTextureArguments.window         = window;
+  framebufferTextureArguments.graphicsOutput = graphicsOutput;
+  framebufferTextureArguments.graphicsEngine = graphicsEngine;
+  framebufferTextureArguments.bitplane       = GraphicsOutput::RTP_color;
+  framebufferTextureArguments.rgbaBits       = rgba32;
+  framebufferTextureArguments.clearColor     = LColor(0, 0, 0, 0);
+  framebufferTextureArguments.setFloatColor  = true;
+  framebufferTextureArguments.setSrgbColor   = false;
+  framebufferTextureArguments.setRgbColor    = true;
+  framebufferTextureArguments.aux_rgba       = 1;
+  framebufferTextureArguments.useScene       = true;
+  framebufferTextureArguments.name           = "geometry2";
+
+  FramebufferTexture geometry2FramebufferTexture = generateFramebufferTexture( framebufferTextureArguments);
+  
+  PT(GraphicsOutput) geometry2Buffer = geometry2FramebufferTexture.buffer;
+  PT(Camera)         geometry2Camera = geometry2FramebufferTexture.camera;
+  NodePath           geometry2NP     = geometry2FramebufferTexture.shaderNP;
+
+  
+  geometry2Buffer->add_render_texture( NULL, GraphicsOutput::RTM_bind_or_copy, GraphicsOutput::RTP_aux_rgba_0);
+
+  geometry2Buffer->set_clear_active(3, true);
+  geometry2Buffer->set_clear_value( 3, framebufferTextureArguments.clearColor );
+
+
+  geometry2NP.set_shader(geometryBufferShader2);
+  geometry2NP.set_shader_input("isSmoke",         LVecBase2f(0, 0));
+  geometry2NP.set_shader_input("positionTexture", positionTexture1);
+  geometry2Camera->set_initial_state(geometry2NP.get_state());
+  geometry2Camera->set_tag_state_key("geometry2Buffer");
+  geometry2Camera->set_tag_state("isSmoke", isSmokeNP.get_state());
+  geometry2Camera->set_camera_mask(BitMask32::bit(3));
+  PT(Texture) positionTexture2         = geometry2Buffer->get_texture(0);
+  PT(Texture) smokeMaskTexture         = geometry2Buffer->get_texture(1);
+  PT(Lens)    geometryCameraLens2      = geometry2Camera->get_lens();
+  smokeNP.set_tag("geometry2Buffer", "isSmoke");
+
+
+  /********************************************************************************
+  4. fog pass
+     --fogTexture              
+  ********************************************************************************/
+  // rgba8 : 32-bit-per-pixel
+
+  framebufferTextureArguments.window         = window;
+  framebufferTextureArguments.graphicsOutput = graphicsOutput;
+  framebufferTextureArguments.graphicsEngine = graphicsEngine;
+  framebufferTextureArguments.bitplane       = GraphicsOutput::RTP_color;
+  framebufferTextureArguments.rgbaBits       = rgba8;
+  framebufferTextureArguments.clearColor     = LColor(0, 0, 0, 0);
+  framebufferTextureArguments.setFloatColor  = true;
+  framebufferTextureArguments.setSrgbColor   = false;
+  framebufferTextureArguments.setRgbColor    = true;
+  framebufferTextureArguments.aux_rgba       = 0;
+  framebufferTextureArguments.useScene       = false;
+  framebufferTextureArguments.name           = "fog";
+
+  FramebufferTexture fogFramebufferTexture = generateFramebufferTexture( framebufferTextureArguments );
+  PT(GraphicsOutput) fogBuffer = fogFramebufferTexture.buffer;
+  PT(Camera)         fogCamera = fogFramebufferTexture.camera;
+  NodePath           fogNP     = fogFramebufferTexture.shaderNP;
+
+  
+  fogNP.set_shader(fogShader);
+  fogNP.set_shader_input("pi",               PI_SHADER_INPUT);
+  fogNP.set_shader_input("gamma",            GAMMA_SHADER_INPUT);
+  fogNP.set_shader_input("backgroundColor0", backgroundColor[0]);
+  fogNP.set_shader_input("backgroundColor1", backgroundColor[1]);
+  fogNP.set_shader_input("positionTexture0", positionTexture1);
+  fogNP.set_shader_input("positionTexture1", positionTexture2);
+  fogNP.set_shader_input("smokeMaskTexture", smokeMaskTexture);
+  fogNP.set_shader_input("sunPosition",      LVecBase2f(sunlightP, 0));
+  // origin : the relative pos under cameraNP space of envNP in render3dNP space
+  fogNP.set_shader_input("origin",           cameraNP.get_relative_point(render, environmentNP.get_pos()));
+  fogNP.set_shader_input("nearFar",          LVecBase2f(fogNear, fogFar));
+  fogNP.set_shader_input("enabled",          fogEnabled);
+  fogCamera->set_initial_state(fogNP.get_state());
+  PT(Texture) fogTexture = fogBuffer->get_texture();
+
+
   
   // graphicsOutput->set_sort(gammaCorrectionBuffer->get_sort() + 1);
   // does not have to set order for graphicsOutput
@@ -778,7 +869,10 @@ int main
       std::make_tuple("Normals 1",              geometry1Buffer,           1),
       std::make_tuple("Reflection Mask",        geometry1Buffer,           2),
       std::make_tuple("Refraction Mask",        geometry1Buffer,           3),
-      std::make_tuple("Foam Mask",              geometry1Buffer,           4)
+      std::make_tuple("Foam Mask",              geometry1Buffer,           4),
+      std::make_tuple("position Texture 2",     geometry2Buffer,           0),
+      std::make_tuple("smoke Mask Texture",     geometry2Buffer,           1),
+      std::make_tuple("Fog",                    fogBuffer,                 0)
     };
 
   
@@ -1364,15 +1458,16 @@ int main
 
     cameraNP.look_at(cameraLookAt);
 
+    // update setting vars for each frame
     currentViewWorldMat = cameraNP.get_transform(render)->get_mat();
 
-    /*geometryNP0.set_shader_input("normalMapsEnabled", normalMapsEnabled);
-    geometryNP0.set_shader_input("flowMapsEnabled",   flowMapsEnabled);
-    geometryCamera0->set_initial_state(geometryNP0.get_state());
+    geometry0NP.set_shader_input("normalMapsEnabled", normalMapsEnabled);
+    geometry0NP.set_shader_input("flowMapsEnabled",   flowMapsEnabled);
+    geometry0Camera->set_initial_state(geometry0NP.get_state());
 
-    geometryNP1.set_shader_input("normalMapsEnabled", normalMapsEnabled);
-    geometryNP1.set_shader_input("flowMapsEnabled",   flowMapsEnabled);
-    geometryCamera1->set_initial_state(geometryNP1.get_state());
+    geometry1NP.set_shader_input("normalMapsEnabled", normalMapsEnabled);
+    geometry1NP.set_shader_input("flowMapsEnabled",   flowMapsEnabled);
+    geometry1Camera->set_initial_state(geometry1NP.get_state());
 
     fogNP.set_shader_input("sunPosition",   LVecBase2f(sunlightP, 0));
     fogNP.set_shader_input("origin",        cameraNP.get_relative_point(render, environmentNP.get_pos()));
@@ -1380,7 +1475,7 @@ int main
     fogNP.set_shader_input("enabled",       fogEnabled);
     fogCamera->set_initial_state(fogNP.get_state());
 
-    ssaoNP.set_shader_input("lensProjection", geometryCameraLens0->get_projection_mat());
+    /*ssaoNP.set_shader_input("lensProjection", geometryCameraLens0->get_projection_mat());
     ssaoNP.set_shader_input("enabled",        ssaoEnabled);
     ssaoCamera->set_initial_state(ssaoNP.get_state());
 

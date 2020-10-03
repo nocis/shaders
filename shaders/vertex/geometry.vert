@@ -28,7 +28,7 @@ out vec2 diffuseCoord;  // diffuseCoord
 out vec3 vertexNormal; // z , out of surface
 out vec3 binormal;     // y , binormals and tangents can associated with the Nth texture
 out vec3 tangent;      // x , binormals and tangents can associated with the Nth texture
-
+out vec4 vertexColor;
 
 void main()
 {
@@ -38,6 +38,7 @@ void main()
     // Remember that in view space, all of the coordinates are relative to the camera's position
 
     vertexPosition = p3d_ModelViewMatrix * p3d_Vertex;
+    vertexColor    = p3d_Color;
     gl_Position = p3d_ProjectionMatrix * vertexPosition;
 
 
